@@ -1,12 +1,13 @@
 from fastapi import FastAPI, Depends, Request, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 from sql.database import SessionLocal, engine
 from sql import models, schemas
 from json.decoder import JSONDecodeError
-import json
 from sqlalchemy.orm import Session
 from sql import crud
+import uuid
 app = FastAPI()
 from pydantic import EmailStr
 from fastapi.templating import Jinja2Templates
@@ -59,8 +60,7 @@ async def valid_user(request: Request, db: Session = Depends(get_db)):
             print(4)
             if entity["password"] == db_user.password:
                 print(5)
-                print("Redirigiendo a http://localhost:5173/inicio")
-                return ""
+                return {"username": db_user.name, "email": db_user.email}
             else:
                 print(6)
                 raise HTTPException(status_code=400, detail="Contraseña incorrecta.")
