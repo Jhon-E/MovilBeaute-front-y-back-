@@ -58,19 +58,22 @@ async def valid_user(request: Request, db: Session = Depends(get_db)):
         if db_user:
             print(4)
             if entity["password"] == db_user.password:
+                print(5)
                 print("Redirigiendo a http://localhost:5173/inicio")
-                return RedirectResponse(url="http://localhost:5173/inicio", status_code=303)
+                return ""
             else:
                 print(6)
-                print(entity["password"])
-                print(db_user.password)
+                raise HTTPException(status_code=400, detail="Contraseña incorrecta.")
         if db_stylist:
+            print(7)
             if entity["password"] == db_stylist.password:
-                print(7)
-            else:
                 print(8)
+                return RedirectResponse(url="http://localhost:5173/inicio", status_code=303)
+            else:
+                print(9)
+                raise HTTPException(status_code=400, detail="Contraseña incorrecta.")
         else:
-            pass
+            raise HTTPException(status_code=400, detail="El usuario no existe.")
     except JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON in request body")
 
